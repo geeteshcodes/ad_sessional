@@ -254,8 +254,10 @@ def load_and_prepare(file_bytes):
             transactions.append(items)
     te = TransactionEncoder()
     te_array = te.fit(transactions).transform(transactions)
-    df = pd.DataFrame(te_array, columns=te.columns_)
-    return transactions, df, te.columns_.tolist()
+    # Convert column names to plain strings to avoid cache serialization issues
+    col_names = [str(c) for c in te.columns_]
+    df = pd.DataFrame(te_array, columns=col_names)
+    return transactions, df, col_names
 
 
 def run_apriori(df, min_sup, min_conf):
